@@ -3,11 +3,10 @@ services:
     image: ghcr.io/plankanban/planka:latest
     restart: always
     ports:
-      - "127.0.0.1:${PLANKA_PORT}:1337"
+      - "${PLANKA_PORT}:1337"
     volumes:
       - data:/app/data
     environment:
-      # Planka SKAL kende sin offentlige adresse for at UI'et virker
       - BASE_URL=${PLANKA_URL}:${PLANKA_PORT}
       - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@postgres/${DB_NAME}
       - SECRET_KEY=${SECRET_KEY}
@@ -29,9 +28,8 @@ services:
     image: mgertz/mcp-planka:latest
     restart: unless-stopped
     ports:
-      - "127.0.0.1:${MCP_PORT}:25478"
+      - "${MCP_PORT}:25478"
     environment:
-      # MCP bruger den interne Docker-rute for at undgå timeouts
       - PLANKA_URL=http://planka:${PLANKA_PORT}
       - PLANKA_EMAIL=${MCP_PLANKA_EMAIL}
       - PLANKA_PASSWORD=${MCP_PLANKA_PASSWORD}
@@ -67,11 +65,13 @@ services:
       - DOCKER_MODS=${DOCKER_MODS} 
     volumes:
       - ./obsidian-config:/config
-      - ./agent-output:/vaults/agent # Mount agent-output to a vault for easy access
+      - /home/jonfriis/Dokumenter/real-time-translation-frontend:/vaults/rtf
+      - /home/jonfriis/Dokumenter/real-time-speech-translation-mvp:/vaults/rst
+      - /home/jonfriis/Dokumenter/vs-code-agents:/vaults/agent
     ports:
-      - "127.0.0.1:${HTTP_PORT}:3000"         # HTTP GUI (Styres nu fra .env)
-      - "127.0.0.1:${HTTPS_PORT}:3001"        # HTTPS GUI
-      - "127.0.0.1:${API_PORT}:27124"         # Obsidian Local REST API (VIGTIG for MCP)
+      - "${HTTP_PORT}:3000"
+      - "${HTTPS_PORT}:3001"
+      - "${API_PORT}:27124"
     shm_size: "1gb"
     restart: unless-stopped
     
