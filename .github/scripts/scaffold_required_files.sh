@@ -89,9 +89,6 @@ write_skill_stub() {
 name: $name
 description: $description
 license: MIT
-metadata:
-  author: groupzer0
-  version: "bootstrap"
 ---
 
 # $name
