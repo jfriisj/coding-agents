@@ -1,0 +1,63 @@
+% !TeX root = main.tex
+\chapter{Implementation}
+\label{chap:implementation}
+
+The implementation of the speech translation platform translates the event-driven microservices architecture defined in Chapter~\ref{chap:analysis_design} into a functional, distributed system. This chapter narrates the realization of the orchestrator logic, the management of heavy audio artifacts via the Claim-Check pattern, the deployment of model actors using Ray, and the operational hardening that ensures reproducibility and security.
+
+\section{Orchestrator and Event Flow}
+\label{sec:impl_orchestrator}
+
+The platform's control plane is governed by a Python-based orchestrator utilizing the FastAPI framework to manage asynchronous task lifecycles. The orchestrator serves as the primary consumer of the decision log, mapping high-level user requests to specific service-chain invocations.
+
+\subsection{Event-Driven Logic and Kafka Integration}
+The orchestrator implements the architectural decision to decouple inference services via an event broker. Using the \texttt{confluent-kafka} library, the orchestrator monitors the \texttt{speech.orchestration.command} topic for incoming ASR results or translation requests. Upon receiving an event, the orchestrator consults the session state and dispatches the subsequent command (e.g., initiating machine translation after speech-to-text completion). This reactive model allows the platform to handle bursts of concurrent speaker streams without maintaining persistent, blocking socket connections throughout the entire AI pipeline.
+
+\subsection{Least-Privilege Enforcement via Topic ACLs}
+To maintain architectural integrity and prevent data leakages between service boundaries, the Kafka implementation follows a strict least-privilege model. Each service identity is restricted to specific topics through Access Control Lists (ACLs). For instance, the \texttt{asr-service} is permitted only to publish to the command topic and consume from its dedicated input stream, while the \texttt{orchestrator-service} is the sole identity authorized to consume from command topics and publish to decision topics. This implementation ensures that a compromise of a single model actor does not grant broad access to the entire orchestration flow (FR-011).
+
+\subsection{Observability: Normal-vs-Debug Telemetry}
+Adhering to the project's privacy-safe observability policy, the orchestrator implements a dual-mode telemetry strategy. In \textit{Normal Mode}, the orchestrator emits only metadata-intensive logs and distributed traces. These include \texttt{correlation\_id} propagation (linking ASR, MT, and TTS spans), processing durations, and byte counts. Crucially, raw audio content or transcriptions are excluded by default to allow for shareable evidence logs in an academic context. \textit{Debug Mode} can be opted-in via environment variables, enabling deeper payload inspection for local development, provided it emits a clear security warning at startup. This separation ensures that the "Den Gyldne Rengøringsregel" is enforced: the system remains diagnosable in production without violating user privacy.
+
+\section{Data Management and the Claim Check Pattern}
+\label{sec:impl_data_management}
+
+The platform handles significant volumes of raw audio data, which presents a challenge for traditional message broker payloads. To address this, the implementation utilizes the Claim-Check pattern, decoupling large binary artifacts from the event orchestration stream.
+
+\subsection{Artifact Persistence via MinIO}
+The primary storage layer is implemented using MinIO, an S3-compatible object storage server. When a client initiates a speech stream at the Ingress Gateway, raw audio chunks are captured and persisted directly to a dedicated bucket. Instead of transmitting the heavy audio bytes through the Kafka orchestration topics, the platform generates a unique object reference (the "claim"). This reference is then passed to subsequent services (ASR, MT, TTS) in the event payload, allowing them to fetch only the necessary segments on demand. This approach significantly reduces Kafka overhead and ensures that the event log remains lean and focused on control flow rather than data transport (NFR-007).
+
+\subsection{Claim Lifecycle and Pre-signed URL Hardening}
+To ensure secure and efficient access to audio artifacts, the platform implementation leverages S3 pre-signed URLs. When a service like \texttt{asr-service} needs to process an audio segment, the orchestrator provides a temporary URL with minimal access permissions. To mitigate the risk of bearer token leakage, the platform enforces a strict \textbf{Short-lived URL Policy}, with Time-To-Live (TTL) values restricted to less than one hour. This ensures that even if a URL is intercepted, its window of validity is insufficient for meaningful misuse, thereby hardening the implementation against unauthorized data access.
+
+\subsection{Data Encryption at Rest (SSE-S3)}
+The MinIO implementation serves as the primary security boundary for audio data. All artifacts are encrypted at rest using \textbf{Server Side Encryption (SSE-S3)} with AES-256 encryption. This implementation ensures that the "Clean Boundary" between services is maintained at the storage layer; even in the event of unauthorized access to the underlying storage disks, the raw audio payloads remain unintelligible. The encryption keys are managed within the Swarm infrastructure, ensuring that the platform meets the highest standards of data protection for both normal and debug execution runs.
+
+\section{Model Wrapping and "Warm-Loading"}
+\label{sec:impl_model_wrapping}
+
+The serving of heavy AI models (Whisper and SeamlessM4T) is managed via the Ray framework, which provides a high-performance substrate for distributed model inference. Each model is wrapped within a Ray Actor, allowing the platform to maintain persistent session state and GPU allocation for individual requests.
+
+\subsection{Ray Actors and "Warm-Loading" Strategy}
+A critical implementation choice for meeting the platform's latency goals (P99 < 2s) is the use of a "Warm-Loading" strategy. Unlike traditional lambda-style serverless functions that incur significant cold-start penalties for model initialization, the Ray implementation pre-loads the model weights into GPU memory during service startup. This optimization (NFR-004) enables the platform to respond to translation requests with minimal head-of-line blocking, as the inference pipeline is "warm" and ready for immediate computation upon receiving a new Kafka event.
+
+\subsection{Dynamic Resource Allocation}
+The Ray framework facilitates dynamic resource management, allowing the platform to scale model actors based on GPU availability and request pressure. Each \texttt{asr-actor} is constrained to a specific GPU fractional allocation (e.g., 0.5 GPU), enabling multiple actors to share a single high-performance card while maintaining isolation (FR-014). This approach is essential for scaling the platform from a local MVP to a distributed Docker Swarm environment where GPU resources are shared across multiple nodes.
+
+\section{Orchestration and Reproducibility}
+\label{sec:impl_reproducibility}
+
+The transition from a local development environment to a production-grade distributed cluster is a critical component of the platform's feasibility proof. This section narrates how the implementation ensures environment parity and reproducibility.
+
+\subsection{Transition from Docker Compose to Swarm}
+The platform development lifecycle begins in a local environment using \texttt{docker-compose}, allowing for rapid iteration and debugging. To scale for actual evidence runs, the implementation transitions to \textbf{Docker Swarm}. This transition is facilitated by a unified configuration baseline, where the same root \texttt{.env} file serves as the single source of truth for both environments. This \textbf{Environment Parity} ensures that architectural invariants, such as service-to-service communication paths and network configurations, remain consistent regardless of the underlying orchestration layer (FR-020).
+
+\subsection{Security Hardening in Swarm: Secrets and Overlays}
+The production implementation in Swarm introduces additional hardening measures. Sensitive credentials (e.g., Kafka SASL keys, MinIO S3 secrets) are managed via \textbf{Docker Swarm Secrets}, ensuring they are never stored in plain text or committed to the repository. Furthermore, the platform utilizes \textbf{Swarm Overlay Networks} to enforce network segmentation. Stateful backend services (MinIO, Kafka) are isolated on a dedicated \texttt{speech\_backend} network, inaccessible from the public-facing \texttt{speech\_gateway} through the Ingress Gateway (NFR-009). This layering ensures that the implementation matches the architectural security drivers while remaining shareable for thesis evaluation.
+
+\subsection{Requirement Traceability}
+The final proof of the platform's feasibility is recorded in the traceability matrix. Every component narrated in this chapter—from the orchestrator's event logic to the Ray model actors—maps directly to the functional and non-functional requirements defined in the specification. For instance, the Claim-Check pattern implementation via MinIO and Kafka directly realizes the secure artifact management requirement (FR-007), while the Warm-Loading Ray actors fulfill the latency-bound inference objective (NFR-004). This mapping ensures that the thesis manuscript provides a complete and reviewable evidence path for the evaluator.
+
+\section{Architectural Guardrails and VAD Integration}
+\label{sec:impl_guardrails}
+
+To ensure the robustness of the inference pipeline, the implementation incorporates specific architectural guardrails. Voice Activity Detection (VAD) is integrated as a pre-processing step to filter silence and non-speech artifacts before they reach the more compute-intensive ASR and translation stages. This VAD implementation serves as a crucial latency-saving measure, as it prevents the heavy inference models from being invoked for empty or noisy audio segments, thereby optimizing overall system throughput and preventing GPU bottlenecks (NFR-006).

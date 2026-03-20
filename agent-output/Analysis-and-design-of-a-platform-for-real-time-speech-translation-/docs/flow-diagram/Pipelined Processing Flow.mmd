@@ -1,0 +1,28 @@
+sequenceDiagram
+    participant VAD as VAD Service
+    participant ASR as ASR Service
+    participant MT as Translation
+    participant TTS as TTS Service
+    
+    Note over VAD, TTS: Time Axis (t) --->
+    
+    rect rgb(240, 248, 255)
+        Note right of VAD: Segment 1 (0-3s) processing
+        VAD->>ASR: Event [Seg 1]
+        ASR->>MT: Event [Text 1]
+        MT->>TTS: Event [Trans 1]
+        TTS-->>VAD: Output [Audio 1]
+    end
+    
+    rect rgb(255, 243, 224)
+        Note right of VAD: Segment 2 (3-6s) starts while Seg 1 is still in MT/TTS
+        VAD->>ASR: Event [Seg 2]
+        ASR->>MT: Event [Text 2]
+        MT->>TTS: Event [Trans 2]
+    end
+    
+    rect rgb(232, 245, 233)
+        Note right of VAD: Segment 3 (6-9s) starts pipeline
+        VAD->>ASR: Event [Seg 3]
+        ASR->>MT: Event [Text 3]
+    end

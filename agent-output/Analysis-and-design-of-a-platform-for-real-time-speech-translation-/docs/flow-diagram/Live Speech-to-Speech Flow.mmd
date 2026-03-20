@@ -1,0 +1,15 @@
+flowchart LR
+    User([User / Microphone]) -->|WebSocket Stream| GW[Ingress Gateway]
+    
+    subgraph Pipeline [Event-Driven Pipeline]
+        direction LR
+        GW -->|AudioInputEvent| VAD[VAD Service]
+        VAD -->|SpeechSegmentEvent| ASR[ASR Service]
+        ASR -->|TextRecognizedEvent| MT[Translation Service]
+        MT -->|TextTranslatedEvent| TTS[TTS Service]
+    end
+    
+    TTS -->|AudioSynthesisEvent| GW
+    GW -->|WebSocket Stream| User([User / Speaker])
+
+    style Pipeline fill:#f9f9f9,stroke:#333,stroke-dasharray: 5 5

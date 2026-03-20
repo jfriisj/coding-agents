@@ -1,0 +1,81 @@
+services:
+  planka:
+    image: ghcr.io/plankanban/planka:latest
+    restart: always
+    ports:
+      - "127.0.0.1:${PLANKA_PORT}:1337"
+    volumes:
+      - data:/app/data
+    environment:
+      # Planka SKAL kende sin offentlige adresse for at UI'et virker
+      - BASE_URL=${PLANKA_URL}:${PLANKA_PORT}
+      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@postgres/${DB_NAME}
+      - SECRET_KEY=${SECRET_KEY}
+      - TRUST_PROXY=true
+      - DEFAULT_ADMIN_EMAIL=${ADMIN_EMAIL}
+      - DEFAULT_ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - DEFAULT_ADMIN_NAME=${ADMIN_NAME}
+      - DEFAULT_ADMIN_USERNAME=${ADMIN_USERNAME}
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:${PLANKA_PORT}/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  mcp-planka:
+    image: mgertz/mcp-planka:latest
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${MCP_PORT}:25478"
+    environment:
+      # MCP bruger den interne Docker-rute for at undgå timeouts
+      - PLANKA_URL=http://planka:${PLANKA_PORT}
+      - PLANKA_EMAIL=${MCP_PLANKA_EMAIL}
+      - PLANKA_PASSWORD=${MCP_PLANKA_PASSWORD}
+    depends_on:
+      planka:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  obsidian:
+    build:
+      context: .
+      dockerfile: docker/obsidian.Dockerfile
+    image: local/obsidian-pandoc:latest
+    container_name: obsidian
+    environment:
+      - PUID=${PUID} 
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - DOCKER_MODS=${DOCKER_MODS} 
+    volumes:
+      - ./obsidian-config:/config
+      - ./agent-output:/vaults/agent # Mount agent-output to a vault for easy access
+    ports:
+      - "127.0.0.1:${HTTP_PORT}:3000"         # HTTP GUI (Styres nu fra .env)
+      - "127.0.0.1:${HTTPS_PORT}:3001"        # HTTPS GUI
+      - "127.0.0.1:${API_PORT}:27124"         # Obsidian Local REST API (VIGTIG for MCP)
+    shm_size: "1gb"
+    restart: unless-stopped
+    
+
+volumes:
+  data:
+  db-data:

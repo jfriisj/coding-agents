@@ -1,0 +1,77 @@
+graph TD
+    subgraph Clients [Frontend Clients (app.js / api.js)]
+        ClientA[Person A Browser]
+        ClientB[Person B Browser]
+    end
+
+    subgraph API [API Gateway / Backend]
+        REST[REST API\nSettings, Creation\nToken Issuance]
+        WSS[WebSocket Server\nReal-time Audio & JSON\nAUTH control / strict origin]
+    end
+
+    subgraph EventBroker [Event-Driven Architecture]
+        KAFKA((Event Broker\nKafka impl. / ACL + mTLS))
+    end
+
+    subgraph Microservices [AI Pipeline (Ray Cluster)]
+        VAD[VAD Service\nFilters silence]
+        ASR[ASR Service\nSpeech Recognition]
+        MT[MT Service\nMachine Translation]
+        TTS[TTS Service\nSpeech Synthesis]
+    end
+
+    subgraph Storage [Persistent Data]
+        DB[(PostgreSQL\nUsers & History)]
+        MINIO[(MinIO / Object Store\nClaim Check, SSE, scoped access)]
+    end
+
+    %% REST calls for setup
+    ClientA -- "POST /sessions" --> REST
+    ClientB -- "POST /sessions/{id}/join" --> REST
+    ClientA -- "POST /auth/token" --> REST
+    ClientB -- "POST /auth/token" --> REST
+    REST --> DB
+
+    %% WebSocket data streaming
+    ClientA -- "AUTH control message" --> WSS
+    ClientB -- "AUTH control message" --> WSS
+    ClientA -- "WebM Audio chunks" --> WSS
+    ClientB -- "WebM Audio chunks" --> WSS
+    
+    %% Kafka asynchronous flow
+    WSS -- "1. AudioInputEvent" --> KAFKA
+    
+    KAFKA -- "Event" --> VAD
+    VAD -- "2. SpeechSegmentEvent" --> KAFKA
+    
+    KAFKA -- "Event" --> ASR
+    ASR -- "3. TextRecognizedEvent" --> KAFKA
+    
+    KAFKA -- "Event" --> MT
+    MT -- "4. TextTranslatedEvent" --> KAFKA
+    
+    KAFKA -- "Event" --> TTS
+    TTS -- "5. AudioSynthesisEvent" --> KAFKA
+
+    %% Response to frontend via WebSocket
+    KAFKA -- "TRANSCRIPT_UPDATE" --> WSS
+    KAFKA -- "AudioSynthesisEvent" --> WSS
+    
+    WSS -- "JSON Update" --> ClientA
+    WSS -- "JSON + Binary TTS Audio" --> ClientB
+
+    %% Claim Check Pattern for large files
+    WSS -. "Saves large audio (Claim Check / SSE)" .-> MINIO
+    TTS -. "Saves TTS audio (Claim Check / SSE)" .-> MINIO
+
+    classDef frontend fill:#e1f5fe,stroke:#4fc3f7,stroke-width:2px;
+    classDef api fill:#fff3e0,stroke:#ffb74d,stroke-width:2px;
+    classDef broker fill:#f3e5f5,stroke:#ce93d8,stroke-width:2px;
+    classDef microservice fill:#e8f5e9,stroke:#81c784,stroke-width:2px;
+    classDef storage fill:#eceff1,stroke:#b0bec5,stroke-width:2px;
+
+    class ClientA,ClientB frontend;
+    class REST,WSS api;
+    class KAFKA broker;
+    class VAD,ASR,MT,TTS microservice;
+    class DB,MINIO storage;

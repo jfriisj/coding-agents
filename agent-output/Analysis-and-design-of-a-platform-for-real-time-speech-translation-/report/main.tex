@@ -1,0 +1,119 @@
+\documentclass[a4paper,oneside,11pt]{memoir}
+
+\usepackage[utf8]{inputenc} % input encoding
+\usepackage[T1]{fontenc} % font encoding
+
+\usepackage{graphicx} %to include images/graphics
+\usepackage{amsmath,amssymb} %better math type setting
+\usepackage{listings} %for source code snippets
+\usepackage{textcomp} %for upquote
+\usepackage{xcolor} % nice colors (for source code)
+\usepackage{url} % for \url in bibliography entries
+\usepackage{longtable} % for long tables in the appendix
+\usepackage{float} % for better control of figure/table placement
+\usepackage{hyperref} % for hyperlinks and \autoref
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    citecolor=black,
+    urlcolor=blue,
+    pdftitle={Real-Time Speech Translation Platform},
+}
+
+
+\lstdefinelanguage{json}{
+    basicstyle=\normalfont\ttfamily\footnotesize,
+    numbers=left,
+    numberstyle=\scriptsize,
+    stepnumber=1,
+    numbersep=8pt,
+    showstringspaces=false,
+    breaklines=true,
+    frame=lines,
+    backgroundcolor=\color{white},
+    literate=
+     *{0}{{{\color{blue}0}}}{1}
+      {1}{{{\color{blue}1}}}{1}
+      {2}{{{\color{blue}2}}}{1}
+      {3}{{{\color{blue}3}}}{1}
+      {4}{{{\color{blue}4}}}{1}
+      {5}{{{\color{blue}5}}}{1}
+      {6}{{{\color{blue}6}}}{1}
+      {7}{{{\color{blue}7}}}{1}
+      {8}{{{\color{blue}8}}}{1}
+      {9}{{{\color{blue}9}}}{1}
+      {:}{{{\color{red}{:}}}}{1}
+      {,}{{{\color{red}{,}}}}{1}
+      {\{}{{{\color{black}{\{}}}}{1}
+      {\}}{{{\color{black}{\}}}}}{1}
+      {[}{{{\color{black}{[}}}}{1}
+      {]}{{{\color{black}{]}}}}{1},
+}
+
+\renewcommand{\ttdefault}{pcr} % nicer font for source code
+
+% an example configuration of the 'listings' package
+\lstset{basicstyle=\ttfamily, 
+        keywordstyle=\color{purple}\ttfamily,
+        commentstyle=\color{gray}\ttfamily,
+        stringstyle=\color{orange}\ttfamily,
+        captionpos=b,
+        float=tb,
+        upquote=true,
+}
+
+\chapterstyle{tandh} % configuration of the 'memoir' class
+
+%
+% The actual document starts here
+%
+\begin{document}
+
+\input{frontpage}
+
+\cleardoublepage
+
+\frontmatter
+
+\input{abstract}
+
+\cleardoublepage
+
+\tableofcontents
+
+\mainmatter
+
+%
+% We have one file per chapter:
+%
+
+% Introduction chapter in 'chap-introduction.tex'
+\input{chap-introduction}
+
+% Background chapter in 'chap-background.tex'
+\input{chap-background}
+
+% ...
+
+% Analysis and Design chapter in 'chap-analysis-and-design.tex'
+\input{chap-analysis-and-design}
+
+% Implementation chapter in 'chap-implementation.tex'
+\input{chap-implementation}
+
+% Evaluation chapter in 'chap-evaluation.tex'
+\input{chap-evaluation}
+
+% Conclusion chapter in 'chap-conclusion.tex'
+\input{chap-conclusion}
+
+\appendix
+
+% Appendix chapter in 'chap-appendix.tex'
+\input{chap-appendix}
+
+\nocite{*}
+\bibliographystyle{plain}
+\bibliography{mybibliography}
+
+\end{document}

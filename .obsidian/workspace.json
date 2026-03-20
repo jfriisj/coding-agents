@@ -1,0 +1,228 @@
+{
+  "main": {
+    "id": "53722f4cc5a22294",
+    "type": "split",
+    "children": [
+      {
+        "id": "abcd9bfd6500bcb2",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "67885df7b3bd5e26",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "New tab"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "50842601582ca344",
+    "type": "split",
+    "children": [
+      {
+        "id": "d2ab0249f0f63d6b",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "0d9873c6bf44dc91",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "ee2df816e907d4d6",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "2ec9cc86b5dc39c0",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "725bf22d578cd59e",
+    "type": "split",
+    "children": [
+      {
+        "id": "1766aa0302f569ce",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "a25d6be79af4d446",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks"
+            }
+          },
+          {
+            "id": "c3d79b40fe1030fe",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links"
+            }
+          },
+          {
+            "id": "b40b049b869ace7f",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "b02829057d6db94c",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "171cb42c0d7129d6",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "0d9873c6bf44dc91",
+  "lastOpenFiles": [
+    "Analysis-and-design-of-a-platform-for-real-time-speech-translation-/report/main.fdb_latexmk",
+    "Analysis-and-design-of-a-platform-for-real-time-speech-translation-/report/main.synctex.gz",
+    "Analysis-and-design-of-a-platform-for-real-time-speech-translation-/report/main.synctex(busy)",
+    "Analysis-and-design-of-a-platform-for-real-time-speech-translation-/report/main.fls",
+    "Analysis-and-design-of-a-platform-for-real-time-speech-translation-/report/pdflatex773373.fls",
+    "Analysis-and-design-of-a-platform-for-real-time-speech-translation-/report/main.bbl",
+    "Analysis-and-design-of-a-platform-for-real-time-speech-translation-/report/main.blg",
+    "Analysis-and-design-of-a-platform-for-real-time-speech-translation-/report/main.toc",
+    "Analysis-and-design-of-a-platform-for-real-time-speech-translation-/report/main.pdf",
+    "Analysis-and-design-of-a-platform-for-real-time-speech-translation-/report/main.aux",
+    "workflows/closed/WF-E1.4-implementation-narrative-reproducibility.md",
+    "workflows/closed/WF-P003.md",
+    "workflows/closed/WF-UAT-003-analysis-and-design-value-validation.md",
+    "workflows/closed/WF-QA-003-manuscript-delivery-verification.md",
+    "workflows/closed/WF-UAT-003-analysis-and-design-chapter-consolidation.md",
+    "workflows/closed/WF-QA-003-security-remediation-verification.md",
+    "workflows/closed/WF-CR-003.md",
+    "workflows/closed/WF-IMPL-003-analysis-and-design-security-remediation.md",
+    "critiques/closed/004-epic-1.4-implementation-narrative-critique.md",
+    "architecture/closed/004-implementation-architecture-findings.md",
+    "architecture/closed/003-epic-1.3-architecture-findings.md",
+    "architecture/closed/003-epic-1.2-revision-gap-analysis.md",
+    "security/closed/004-implementation-security-review.md",
+    "security/closed/003-epic-1.3-security-audit.md",
+    "workflows/closed",
+    "code-review/closed/004-epic-1.4-implementation-narrative-review.md",
+    "code-review/closed/004-epic-1.4-implementation-final-review.md",
+    "code-review/closed/003-epic-1.3-analysis-and-design-chapter-consolidation-review.md",
+    "uat/closed/004-epic-1.4-implementation-narrative-uat.md",
+    "uat/closed/003-epic-1.3-analysis-and-design-chapter-consolidation-uat.md",
+    "uat/closed/003-epic-1.3-analysis-and-design-chapter-consolidation.md",
+    "qa/closed/004-epic-1.4-implementation-narrative-qa.md",
+    "qa/closed/003-epic-1.3-security-remediation-strategy.md",
+    "qa/closed/003-epic-1.3-security-remediation-report.md",
+    "qa/closed/003-epic-1.3-manuscript-delivery-report.md",
+    "implementation/closed/003-epic-1.3-requirement-attribute-mapping.md",
+    "Analysis-and-design-of-a-platform-for-real-time-speech-translation-/books/AI Engineering - Chip Huyen-media/cover.jpeg",
+    "Analysis-and-design-of-a-platform-for-real-time-speech-translation-/books/AI Engineering - Chip Huyen-media/OEBPS/assets/aien_0102.png",
+    "Analysis-and-design-of-a-platform-for-real-time-speech-translation-/books/AI Engineering - Chip Huyen-media/OEBPS/assets/aien_0101.png",
+    "Analysis-and-design-of-a-platform-for-real-time-speech-translation-/books/The AI Engineering Bible - Thomas R. Caldwell-media/image_rsrc6XT.jpg",
+    "Analysis-and-design-of-a-platform-for-real-time-speech-translation-/books/The AI Engineering Bible - Thomas R. Caldwell-media/image_rsrc6XS.jpg",
+    "Analysis-and-design-of-a-platform-for-real-time-speech-translation-/books/The AI Engineering Bible - Thomas R. Caldwell-media/image_rsrc6XR.jpg",
+    "Analysis-and-design-of-a-platform-for-real-time-speech-translation-/books/The AI Engineering Bible - Thomas R. Caldwell-media/image_rsrc6XP.jpg",
+    "Analysis-and-design-of-a-platform-for-real-time-speech-translation-/books/The AI Engineering Bible - Thomas R. Caldwell-media/image_rsrc6XN.jpg",
+    "Analysis-and-design-of-a-platform-for-real-time-speech-translation-/books/The AI Engineering Bible - Thomas R. Caldwell-media/image_rsrc6XM.jpg",
+    "Analysis-and-design-of-a-platform-for-real-time-speech-translation-/books/The AI Engineering Bible - Thomas R. Caldwell-media/image_rsrc6XK.jpg"
+  ]
+}

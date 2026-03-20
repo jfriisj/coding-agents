@@ -1,0 +1,23 @@
+sequenceDiagram
+    autonumber
+    participant Bench as Benchmark Runner
+    participant Kafka as Kafka Broker
+    participant Svc as Any Service (e.g. ASR)
+
+    Note over Bench: Start Latency Test (N=100)
+
+    %% Injection
+    Bench->>Kafka: Inject Event (T0 timestamp inside payload)
+    
+    %% Parallel Observation
+    par Service Processing
+        Kafka->>Svc: Consume Event
+        Svc->>Svc: Process (Compute)
+        Svc->>Kafka: Produce Output Event
+    and Measurement Observation
+        Kafka-->>Bench: Consumer: Input Topic (Log T0)
+        Kafka-->>Bench: Consumer: Output Topic (Log T1)
+    end
+
+    Note over Bench: Latency = T1 - T0
+    Bench->>Bench: Store Metric in Report

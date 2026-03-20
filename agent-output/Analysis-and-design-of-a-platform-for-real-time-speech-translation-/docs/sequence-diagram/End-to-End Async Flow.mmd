@@ -1,0 +1,40 @@
+sequenceDiagram
+    autonumber
+    participant User as Client (User)
+    participant GW as Ingress Gateway
+    participant Kafka as Kafka (Event Bus)
+    participant VAD as VAD Service
+    participant ASR as ASR Service
+    participant MT as Translation Service
+    participant TTS as TTS Service
+
+    Note over User, GW: WebSocket Connection Established
+
+    %% Ingress Flow
+    User->>GW: Stream Audio Chunk (Binary)
+    GW->>GW: Wrap in AudioInputEvent (Avro)
+    GW->>Kafka: Produce to 'audio.ingress'
+    
+    %% VAD Processing
+    Kafka->>VAD: Consume 'audio.ingress'
+    VAD->>VAD: Detect Speech Activity
+    VAD->>Kafka: Produce 'speech_segment' (Target Topic)
+
+    %% ASR Processing
+    Kafka->>ASR: Consume 'speech_segment'
+    ASR->>ASR: Transcribe (Whisper)
+    ASR->>Kafka: Produce 'asr.text'
+
+    %% Translation Processing
+    Kafka->>MT: Consume 'asr.text'
+    MT->>MT: Translate (NLLB)
+    MT->>Kafka: Produce 'translation.text'
+
+    %% TTS Processing
+    Kafka->>TTS: Consume 'translation.text'
+    TTS->>TTS: Synthesize (Kokoro)
+    TTS->>Kafka: Produce 'tts.audio'
+
+    %% Egress Flow
+    Kafka->>GW: Consume 'tts.audio'
+    GW->>User: Send Audio Chunk (WebSocket)
