@@ -47,7 +47,7 @@ Use as many or as few as you need, in any order. They are designed to know their
 ### 1. Get the Agents
 
 ```bash
-git clone https://github.com/groupzer0/agents.git
+git clone https://github.com/jfriisj/coding-agents
 ```
 
 ### 2. Add to Your Project
