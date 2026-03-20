@@ -1,4 +1,4 @@
-# VS Code Agents (Memory)
+# Coding Agents
 
 > A multi-agent workflow system for GitHub Copilot in VS Code that brings structure, quality gates, and long-term memory to AI-assisted development.
 
