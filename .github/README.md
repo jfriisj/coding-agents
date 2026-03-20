@@ -278,22 +278,22 @@ If you are contributing to this repository directly, place agent specs under `.g
 
 ## Skills Catalog
 
-All reusable skills live under `.github/skills/`. Every skill includes a `SKILL.md`, and some skills include optional `references/` resources.
+All reusable skills live under `skills/`. Every skill includes a `SKILL.md`, and some skills include optional `references/` resources.
 
 | Skill | Focus | Included resources |
 |-------|-------|--------------------|
-| [analysis-methodology](.github/skills/analysis-methodology/SKILL.md) | Systematic investigation workflow (confidence levels, gap tracking, handoff protocol) | `SKILL.md` |
-| [architecture-patterns](.github/skills/architecture-patterns/SKILL.md) | Architecture patterns, ADR templates, and anti-pattern detection | `SKILL.md`, `references/*` |
-| [code-review-checklist](.github/skills/code-review-checklist/SKILL.md) | Pre/post-implementation review criteria with severity-oriented checks | `SKILL.md` |
-| [code-review-standards](.github/skills/code-review-standards/SKILL.md) | Review checklist, severity definitions, and review document templates | `SKILL.md` |
-| [cross-repo-contract](.github/skills/cross-repo-contract/SKILL.md) | Multi-repo API contract discovery, type safety, and coordinated contract changes | `SKILL.md` |
-| [document-lifecycle](.github/skills/document-lifecycle/SKILL.md) | Unified numbering, terminal statuses, close procedures, and orphan detection | `SKILL.md` |
-| [engineering-standards](.github/skills/engineering-standards/SKILL.md) | SOLID/DRY/YAGNI/KISS guidance with detection and refactoring patterns | `SKILL.md` |
-| [obsidian-workflow](.github/skills/obsidian-workflow/SKILL.md) | Relational memory graph workflow with strict WF-node conventions | `SKILL.md`, `references/*` |
-| [planka-workflow](.github/skills/planka-workflow/SKILL.md) | Agile workflow synchronization across markdown artifacts, Obsidian context, and Planka execution | `SKILL.md`, `references/*` |
-| [release-procedures](.github/skills/release-procedures/SKILL.md) | Versioning, release verification, and deployment process checks | `SKILL.md`, `references/*` |
-| [security-patterns](.github/skills/security-patterns/SKILL.md) | OWASP + language-specific vulnerability patterns and remediation guidance | `SKILL.md`, `references/*` |
-| [testing-patterns](.github/skills/testing-patterns/SKILL.md) | TDD workflow, test pyramid, coverage strategy, mocking, and anti-patterns | `SKILL.md`, `references/*` |
+| [analysis-methodology](skills/analysis-methodology/SKILL.md) | Systematic investigation workflow (confidence levels, gap tracking, handoff protocol) | `SKILL.md` |
+| [architecture-patterns](skills/architecture-patterns/SKILL.md) | Architecture patterns, ADR templates, and anti-pattern detection | `SKILL.md`, `references/*` |
+| [code-review-checklist](skills/code-review-checklist/SKILL.md) | Pre/post-implementation review criteria with severity-oriented checks | `SKILL.md` |
+| [code-review-standards](skills/code-review-standards/SKILL.md) | Review checklist, severity definitions, and review document templates | `SKILL.md` |
+| [cross-repo-contract](skills/cross-repo-contract/SKILL.md) | Multi-repo API contract discovery, type safety, and coordinated contract changes | `SKILL.md` |
+| [document-lifecycle](skills/document-lifecycle/SKILL.md) | Unified numbering, terminal statuses, close procedures, and orphan detection | `SKILL.md` |
+| [engineering-standards](skills/engineering-standards/SKILL.md) | SOLID/DRY/YAGNI/KISS guidance with detection and refactoring patterns | `SKILL.md` |
+| [obsidian-workflow](skills/obsidian-workflow/SKILL.md) | Relational memory graph workflow with strict WF-node conventions | `SKILL.md`, `references/*` |
+| [planka-workflow](skills/planka-workflow/SKILL.md) | Agile workflow synchronization across markdown artifacts, Obsidian context, and Planka execution | `SKILL.md`, `references/*` |
+| [release-procedures](skills/release-procedures/SKILL.md) | Versioning, release verification, and deployment process checks | `SKILL.md`, `references/*` |
+| [security-patterns](skills/security-patterns/SKILL.md) | OWASP + language-specific vulnerability patterns and remediation guidance | `SKILL.md`, `references/*` |
+| [testing-patterns](skills/testing-patterns/SKILL.md) | TDD workflow, test pyramid, coverage strategy, mocking, and anti-patterns | `SKILL.md`, `references/*` |
 
 ---
 
