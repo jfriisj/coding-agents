@@ -16,7 +16,7 @@ handoffs:
     send: false
   - label: Approve for Implementation
     agent: 07-Implementer
-    prompt: Plan is sound and ready for implementation. Please begin implementation now. 
+    prompt: Plan is sound and ready for implementation. Please list the implementation steps and begin implementation now. 
     send: false
 ---
 ## Strict Governance Baseline (Mandatory)

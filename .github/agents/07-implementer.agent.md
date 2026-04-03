@@ -3,12 +3,11 @@ description: Execution-focused coding agent that implements approved plans.
 name: 07-Implementer
 target: vscode
 argument-hint: Reference the approved plan to implement (e.g., plan 002)
-tools: [vscode/vscodeAPI, execute, read, edit, search, 'filesystem/*', 'analyzer/*', 'obsidian/*', 'planka/*', ms-python.python/getPythonEnvironmentInfo, ms-python.python/getPythonExecutableCommand, ms-python.python/installPythonPackage, ms-python.python/configurePythonEnvironment, todo]
-model: GPT-5.3-Codex (copilot)
+tools: [vscode/getProjectSetupInfo, vscode/memory, vscode/vscodeAPI, execute, read, edit, search, 'analyzer/*', 'filesystem/*', 'obsidian/*', 'planka/*', 'pylance-mcp-server/*', ms-python.python/getPythonEnvironmentInfo, ms-python.python/getPythonExecutableCommand, ms-python.python/installPythonPackage, ms-python.python/configurePythonEnvironment, todo]
 handoffs:
   - label: Continue Implementation
-    agent: agent
-    prompt: Continue implementing the plan
+    agent: 07-Implementer
+    prompt: Continue with next step for completing plan implementation.
     send: true
   - label: Request Plan Clarification
     agent: 02-Planner

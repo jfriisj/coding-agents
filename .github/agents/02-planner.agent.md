@@ -28,7 +28,7 @@ handoffs:
     send: false
   - label: Begin Implementation
     agent: 07-Implementer
-    prompt: Plan has been approved. Proceed with implementation; the user will decide whether to run Implementer locally or as a background agent.
+    prompt: Plan is sound and ready for implementation. Please list the implementation steps and begin implementation now.
     send: false
 ---
 

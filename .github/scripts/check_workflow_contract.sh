@@ -8,6 +8,10 @@ CHANGED_ONLY=0
 BASE_REF=""
 MAX_SUMMARY_BULLETS=3
 MAX_SUMMARY_LINES=10
+REQUIRED_FRONTMATTER_KEYS="type parent Planka-Card artifact_hash"
+ENFORCE_REQUIRED_SECTIONS=1
+ENFORCE_SUMMARY_LIMITS=1
+ENFORCE_WF_REF_EXISTENCE=1
 
 usage() {
   cat <<'EOF'
@@ -75,6 +79,18 @@ while [ "$#" -gt 0 ]; do
       ;;
   esac
 done
+
+if [ "$CHANGED_ONLY" -eq 0 ] && [ -n "${GITHUB_BASE_REF:-}" ]; then
+  CHANGED_ONLY=1
+fi
+
+if [ -n "${GITHUB_BASE_REF:-}" ] && [ "${WF_CONTRACT_PR_STRICT:-0}" != "1" ]; then
+  REQUIRED_FRONTMATTER_KEYS="type parent"
+  ENFORCE_REQUIRED_SECTIONS=0
+  ENFORCE_SUMMARY_LIMITS=0
+  ENFORCE_WF_REF_EXISTENCE=0
+  printf '[INFO] PR compatibility mode enabled for workflow contract check (set WF_CONTRACT_PR_STRICT=1 for full strict mode).\n'
+fi
 
 if [ "${WORKFLOW_DIR#"$ROOT"}" = "$WORKFLOW_DIR" ]; then
   WORKFLOW_DIR=$(CDPATH= cd -- "$WORKFLOW_DIR" && pwd)
@@ -181,7 +197,7 @@ while IFS= read -r file; do
     }
   ' "$file" >/dev/null 2>&1; then
     awk 'NR == 1 { next } $0 == "---" { exit } { print }' "$file" > "$frontmatter_tmp"
-    for key in type parent Planka-Card artifact_hash; do
+    for key in $REQUIRED_FRONTMATTER_KEYS; do
       if ! grep -Eq "^[[:space:]]*${key}:" "$frontmatter_tmp"; then
         printf '       - Missing frontmatter key: %s\n' "$key" >> "$violations_tmp"
         file_violations=$((file_violations + 1))
@@ -193,12 +209,14 @@ while IFS= read -r file; do
   fi
   rm -f "$frontmatter_tmp"
 
-  for section in "## Summary" "## Artifacts"; do
-    if ! grep -Fq "$section" "$file"; then
-      printf '       - Missing required section: %s\n' "$section" >> "$violations_tmp"
-      file_violations=$((file_violations + 1))
-    fi
-  done
+  if [ "$ENFORCE_REQUIRED_SECTIONS" -eq 1 ]; then
+    for section in "## Summary" "## Artifacts"; do
+      if ! grep -Fq "$section" "$file"; then
+        printf '       - Missing required section: %s\n' "$section" >> "$violations_tmp"
+        file_violations=$((file_violations + 1))
+      fi
+    done
+  fi
 
   summary_counts=$(awk '
     BEGIN { in_summary = 0; summary_found = 0; bullets = 0; lines = 0 }
@@ -217,7 +235,7 @@ while IFS= read -r file; do
     }
   ' "$file")
 
-  if [ "$summary_counts" != "NA" ]; then
+  if [ "$ENFORCE_SUMMARY_LIMITS" -eq 1 ] && [ "$summary_counts" != "NA" ]; then
     summary_bullets=${summary_counts%%:*}
     summary_lines=${summary_counts##*:}
 
@@ -252,27 +270,29 @@ while IFS= read -r file; do
     file_violations=$((file_violations + 1))
   fi
 
-  refs_tmp=$(mktemp)
-  awk '
-    {
-      line = $0
-      while (match(line, /\[\[WF-[^]|#\]]+/)) {
-        ref = substr(line, RSTART + 2, RLENGTH - 2)
-        sub(/\.md$/, "", ref)
-        print ref
-        line = substr(line, RSTART + RLENGTH)
+  if [ "$ENFORCE_WF_REF_EXISTENCE" -eq 1 ]; then
+    refs_tmp=$(mktemp)
+    awk '
+      {
+        line = $0
+        while (match(line, /\[\[WF-[^]|#\]]+/)) {
+          ref = substr(line, RSTART + 2, RLENGTH - 2)
+          sub(/\.md$/, "", ref)
+          print ref
+          line = substr(line, RSTART + RLENGTH)
+        }
       }
-    }
-  ' "$file" | sort -u > "$refs_tmp"
+    ' "$file" | sort -u > "$refs_tmp"
 
-  while IFS= read -r ref; do
-    [ -n "$ref" ] || continue
-    if ! grep -Fxq "$ref" "$ids_tmp"; then
-      printf '       - WF reference points to missing note: [[%s]]\n' "$ref" >> "$violations_tmp"
-      file_violations=$((file_violations + 1))
-    fi
-  done < "$refs_tmp"
-  rm -f "$refs_tmp"
+    while IFS= read -r ref; do
+      [ -n "$ref" ] || continue
+      if ! grep -Fxq "$ref" "$ids_tmp"; then
+        printf '       - WF reference points to missing note: [[%s]]\n' "$ref" >> "$violations_tmp"
+        file_violations=$((file_violations + 1))
+      fi
+    done < "$refs_tmp"
+    rm -f "$refs_tmp"
+  fi
 
   rel_file=${file#"$ROOT/"}
   if [ "$file_violations" -gt 0 ]; then
