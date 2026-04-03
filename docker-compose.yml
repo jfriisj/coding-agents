@@ -65,9 +65,7 @@ services:
       - DOCKER_MODS=${DOCKER_MODS} 
     volumes:
       - ./obsidian-config:/config
-      - /home/jonfriis/Dokumenter/real-time-translation-frontend:/vaults/rtf
-      - /home/jonfriis/Dokumenter/real-time-speech-translation-mvp:/vaults/rst
-      - /home/jonfriis/Dokumenter/vs-code-agents:/vaults/agent
+      - ./vs-code-agents:/vaults/agent
     ports:
       - "${HTTP_PORT}:3000"
       - "${HTTPS_PORT}:3001"
