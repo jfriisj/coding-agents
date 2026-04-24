@@ -1,0 +1,97 @@
+name: CPU Images
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "services/**"
+      - "shared/**"
+      - "docker-compose.yml"
+      - "docker-compose.observability.yml"
+      - ".github/workflows/cpu-images.yml"
+      - "!**/*.md"
+  push:
+    branches:
+      - main
+    paths:
+      - "services/**"
+      - "shared/**"
+      - "docker-compose.yml"
+      - "docker-compose.observability.yml"
+      - ".github/workflows/cpu-images.yml"
+      - "!**/*.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+  actions: write
+
+concurrency:
+  group: cpu-images-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-cpu-images:
+    name: Build CPU image (${{ matrix.service }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - service: asr
+            dockerfile: services/asr/Dockerfile.whisper-medium
+            image: asr-cpu
+          - service: vad
+            dockerfile: services/vad/Dockerfile.silero
+            image: vad-cpu
+          - service: translation
+            dockerfile: services/translation/Dockerfile.xenova
+            image: translation-cpu
+          - service: tts
+            dockerfile: services/tts/Dockerfile.chatterbox
+            image: tts-cpu
+          - service: orchestrator
+            dockerfile: services/orchestrator/Dockerfile
+            image: orchestrator-cpu
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Derive lowercase image owner
+        id: owner
+        run: echo "value=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to GHCR
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ghcr.io/${{ steps.owner.outputs.value }}/real-time-speech-translation-mvp-${{ matrix.image }}
+          tags: |
+            type=sha,format=short,prefix=sha-
+            type=raw,value=main,enable={{is_default_branch}}
+
+      - name: Build (and push on main)
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          pull: true
+          push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=${{ matrix.image }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.image }},ignore-error=true

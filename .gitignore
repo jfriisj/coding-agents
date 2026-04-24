@@ -11,4 +11,8 @@
 scripts/__pycache__/*
 tests/__pycache__/*
 agent-output/Analysis-and-design-of-a-platform-for-real-time-speech-translation-/books/*
+<<<<<<< HEAD
 obsidian-config/*
+=======
+obsidian-config/
+>>>>>>> 50b980a (added context light workflow)
